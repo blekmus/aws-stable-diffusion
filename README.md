@@ -28,11 +28,11 @@ Once your quota increase request is approved, you can proceed with launching the
 3. In the Quick Start section select `Ubuntu` as the AMI.
 4. From the dropdown select a `Deep Learning AMI` with the most recent version of `PyTorch`.
 5. Choose `g4dn.xlarge` as the instance type.
-6. Set the storage to `70gb` (increase if needed).
+6. Set the storage to `80gb` (increase if needed).
 7. Configure other instance settings such as network, security groups, and key pairs according to your requirements.
 8. Proceed to review the configuration and click "Launch" to start the instance.
    
-By following these steps, you will launch a g4dn.xlarge instance with the Deep Learning AMI. This AMI is recommended because it already includes the necessary graphics drivers (CUDA) preinstalled. The allocated storage of 70 GB provides sufficient space for installing Stable Diffusion WebUI and the storage cruncher that is ControlNet, with around 15 GB of extra space available.
+By following these steps, you will launch a g4dn.xlarge instance with the Deep Learning AMI. This AMI is recommended because it already includes the necessary graphics drivers (CUDA) preinstalled. The allocated storage of 80 GB provides sufficient space for installing Stable Diffusion WebUI and the storage cruncher that is ControlNet, with around 15 GB of extra space available.
 
 Attaching a static IP to this instance is recommended. Or else the IP address changes everytime the instance is restarted.
     
