@@ -124,3 +124,7 @@ ssh -N -L 7860:127.0.0.1:7860 ubuntu@ipaddress
 ```
 
 Once the SSH tunnel is established, you can access it by visiting `http://localhost:7860`. Please note that you need to keep the terminal or command prompt window open with the SSH tunnel command running to maintain the connection. If you close the terminal or command prompt, the tunnel will be closed, and you will need to establish it again for future access.
+
+### References
+
+This configuration is built on top of [mikeage/stable-diffusion-aws](https://github.com/mikeage/stable-diffusion-aws).
