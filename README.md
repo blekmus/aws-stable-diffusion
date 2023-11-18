@@ -9,9 +9,9 @@ The recommended EC2 instance to run SD Automatic1111 WebUI is the g4dn.xlarge in
 4. Click on `Request Quota Increase` and enter the value `4` into the input box.
 5. Click "Request" to submit your quota increase request.
 
-If you plan to use EC2 Spot Instances, you will also need to request a quota increase for "All G and VT Spot Instance Requests" using the same process.
+If you plan to use EC2 Spot Instances, you will also need to request a quota increase for "All G and VT Spot Instance Requests" using the same process. Using Spot Instances can be significantly cheaper, however, it comes with the risk of being terminated out of nowhere, there by loosing all of your data.
 
-This quota increase request is necessary because the default maximum number of vCPUs your account can have is 0. By requesting an increase to 4, you will be able to run the g4dn.xlarge instance, which has 4 vCPUs. Please note that it may take some time for AWS to review and accept your request. In some cases, they may require additional information or clarification.
+This quota increase request is necessary because the default maximum number of vCPUs your account can have is 0. By requesting an increase to 4, you can run the g4dn.xlarge instance, which has 4 vCPUs. Just so you know, it may take some time for AWS to review and accept your request. In some cases, they may require additional information or clarification.
 
 ### Step 2: Wait for Quota Increase Approval
 
@@ -21,9 +21,11 @@ For me personally, this took almost a week of back and forth. AWS repeatedly dec
 
 ### Step 3: Launching the Instance
 
-Once your quota increase request is approved, you can proceed with launching the g4dn.xlarge instance.
+Once your quota increase request is approved, you can proceed with launching the g4dn.xlarge instance. You can launch it using one of these two types of instances. I would recommend going with on-demand if you want your generated images to persist indefinitely on the instance.
 
-1. Go to the [AWS EC2](https://ap-southeast-1.console.aws.amazon.com/ec2) dashboard and click on "Instances".
+#### On-Demand
+
+1. Go to the AWS EC2 dashboard and click on "Instances".
 2. Click on "Launch Instance" to start the EC2 instance creation process.
 3. In the Quick Start section select `Ubuntu` as the AMI.
 4. From the dropdown select a `Deep Learning AMI` with the most recent version of `PyTorch`.
@@ -31,11 +33,20 @@ Once your quota increase request is approved, you can proceed with launching the
 6. Set the storage to `80gb` (increase if needed).
 7. Configure other instance settings such as network, security groups, and key pairs according to your requirements.
 8. Proceed to review the configuration and click "Launch" to start the instance.
-   
-By following these steps, you will launch a g4dn.xlarge instance with the Deep Learning AMI. This AMI is recommended because it already includes the necessary graphics drivers (CUDA) preinstalled. The allocated storage of 80 GB provides sufficient space for installing Stable Diffusion WebUI and the storage cruncher that is ControlNet, with around 15 GB of extra space available.
 
-Attaching a static IP to this instance is recommended. Or else the IP address changes everytime the instance is restarted.
-    
+#### Spot Instance
+
+1. Same as steps 1 to 7 above.
+2. Expand into the "Advanced Details" and check `Request Spot Instances`.
+3. Click "Customize" next to it and choose `Persistent` from the "Request Type" dropdown.
+4. Proceed to review the configuration and click "Launch" to start the instance.
+
+>By default, Spot Instances are launched in `one time` mode. They cannot be stopped when we're done using it. Running them in `Persistent` mode makes it possible to manually boot and stop when necessary.
+<br><br>It is recommended to back up Spot instances periodically by selecting the instance from the EC2 dashboard then Actions → Images and Templates → Create Image. This process may take some time (15-30mins). If the instance is now interrupted, you can create a new one without the installation hassle. Keep in mind that you will lose all your data from the previous instance when it is interrupted.
+
+The steps above will launch a g4dn.xlarge instance with the Deep Learning AMI. This AMI is recommended because it already includes the necessary graphics drivers (CUDA) preinstalled. The allocated storage of 80 GB provides sufficient space for installing Stable Diffusion WebUI and the storage cruncher that is ControlNet, with around 15 GB of extra space available.
+
+Attaching a static IP to this instance is recommended. Or else the IP address changes every time the instance is restarted.
     
 ### Step 4: Installing and Running SD WebUI
 
@@ -97,7 +108,7 @@ aria2c --console-log-level=error -c -x 16 -s 16 -k 1M https://huggingface.co/lll
 
 ### Extra Storage
 
-The g4dn.xlarge instance comes with an additional high-performance SSD volume mounted at `/mnt/ephemeral`, providing 125GB (115GB) of temporary storage. Please note that the contents of this volume will be wiped every time the EC2 instance is stopped or restarted. You can run the script below to make use of this temporary storage. This script needs to be run everytime the instance is started to keep using the ephemeral volume.
+The g4dn.xlarge instance comes with an additional high-performance SSD volume mounted at `/mnt/ephemeral`, providing 125GB (115GB) of temporary storage. Please note that the contents of this volume will be wiped every time the EC2 instance is stopped or restarted. You can run the script below to make use of this temporary storage. This script needs to be run every time the instance is started to keep using the ephemeral volume.
 
 ``` bash
 #!/bin/bash
@@ -114,7 +125,7 @@ swapon /mnt/ephemeral/swapfile
 
 ### Connecting
 
-To establish a secure connection to the WebUI, you can use an SSH tunnel. Run the following command, replacing `ipaddress` with the static IP address of your AWS EC2 instance. This command creates an SSH tunnel that forwards local port 7860 to port 7860 on the remote instance. Adjust the port numbers as necessary based on your configuration. By default the WebUI runs on port 7860. If you don't see any output from this command don't worry. Unless it fails, its running.
+To establish a secure connection to the WebUI, you can use an SSH tunnel. Run the following command, replacing `ipaddress` with the static IP address of your AWS EC2 instance. This command creates an SSH tunnel that forwards local port 7860 to port 7860 on the remote instance. Adjust the port numbers as necessary based on your configuration. By default, the WebUI runs on port 7860. If you don't see any output from this command don't worry. Unless it fails, it's running.
 
 ``` sh
 ssh -N -L 7860:127.0.0.1:7860 ubuntu@ipaddress
@@ -122,6 +133,9 @@ ssh -N -L 7860:127.0.0.1:7860 ubuntu@ipaddress
 
 Once the SSH tunnel is established, you can access it by visiting `http://localhost:7860`. Please note that you need to keep the terminal window open with the SSH tunnel running to maintain the connection. If you close the terminal the tunnel will be closed.
 
-### References
+### Contributions
 
-This configuration is built on top of [mikeage/stable-diffusion-aws](https://github.com/mikeage/stable-diffusion-aws).
+Inspired by [stable-diffusion-aws](https://github.com/mikeage/stable-diffusion-aws) by [@mikeage](https://github.com/mikeage)
+
+Spot Instance details by [@talyaniv](https://github.com/talyaniv)
+
