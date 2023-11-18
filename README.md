@@ -39,7 +39,7 @@ Attaching a static IP to this instance is recommended. Or else the IP address ch
     
 ### Step 4: Installing and Running SD WebUI
 
-Once the instance is launched and running, you can connect to it and install the necessary dependencies to run SD Automatic1111. Check the official repo before running these to see the most recent installation instructions.
+Once the instance is launched and running, you can connect to it and install the necessary dependencies to run SD Automatic1111.
 
 ``` sh
 # install dependencies
@@ -48,10 +48,7 @@ sudo apt install aria2
 sudo apt install python3.8-venv # change python version
 ```
 
-``` sh
-# official webui installation script
-bash <(wget -qO- https://raw.githubusercontent.com/AUTOMATIC1111/stable-diffusion-webui/master/webui.sh)
-```
+Next, run the automatic Linux installation script from the [official repo](https://github.com/AUTOMATIC1111/stable-diffusion-webui#automatic-installation-on-linux).
 
 Install themes, extensions, embeddings, models and ControlNet. These are all __optional__.
 
